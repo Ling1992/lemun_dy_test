@@ -81,7 +81,7 @@ class IndexController extends Controller
         }
     }
     function pushContent(){
-        $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日剧','欧美剧','综艺'];
+        $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日韩剧','欧美剧','综艺'];
         echo $category[1];
     }
 }

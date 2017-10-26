@@ -41,16 +41,17 @@ class PushContent extends Command
     public function handle()
     {
         //
-        $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日剧','欧美剧','综艺'];
+        $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日韩剧','欧美剧','综艺'];
         $this->info('ling');
 
-//        $index_end = 22155;
-        $index_end = 10;
+        $index_end = 22155;
+//        $index_end = 100;
         $index_start = 1;
         try{
             $client = new Client();
             $request = new Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/one');
-        }catch (Exception $e) {
+//            $request = new Request('POST', 'http://localhost:8087/ling/addContent/dy/one');
+        }catch (\Exception $e) {
             $this->info("error: 创建 http client 失败 ！！！！");
             exit();
         }
