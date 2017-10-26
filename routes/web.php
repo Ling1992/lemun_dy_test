@@ -14,3 +14,6 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->post('/addOneDY', ['uses'=>'Index\IndexController@addOneDy']);
+//$router->get('/test', ['uses'=>'Index\IndexController@pushContent']);
