@@ -6,16 +6,24 @@ use App\Http\Controllers\Controller;
 use \Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use \Illuminate\Support\Facades\Log;
+use GuzzleHttp\Client;
 
 
 
 class IndexController extends Controller
 {
     function addOneDy(Request $request){
+        $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日韩剧','欧美剧','综艺'];
         $params = $request->all();
         Log::info('ling',[1]);
         Log::info('ling',$params);
-
+        $data = [];
+        $data['category'] = $category[$params['category_id']];
+        $data['title'] = $params['title'] ?? "";
+        $data['name'] = $params['name'];
+        $data['image_url'] = $params['image_url'] ?? "";
+        $data['content'] = $params['content'];
+        $data['update_time'] = strtotime($params['update_time']);
 
         $update = DB::table('dy_list')
             ->where('name','=',$params['name'])
@@ -40,6 +48,8 @@ class IndexController extends Controller
                 if ($update_1 && $update_2) {
                     DB::commit();
                     Log::info('ling', ['数据更新 成功 ！！']);
+                    $data['dy_id'] = $update->id;
+                    $this->pushContent($data);
                     return response()->json(['message' => ' 数据更新 成功 ！！', 'result' => 201]);
                 }else{
                     Log::info('ling', ['数据更新 失败 ！！']);
@@ -72,6 +82,8 @@ class IndexController extends Controller
         if ($content_id && $list_id) {
             DB::commit();
             Log::info('ling', ['数据新增 成功 ！！']);
+            $data['dy_id'] = $list_id;
+            $this->pushContent($data);
             return response()->json(['message' => ' 数据新增 成功 ！！', 'result' => 200]);
         }else{
             DB::rollBack();
@@ -80,8 +92,18 @@ class IndexController extends Controller
             return response()->json(['message' => ' 数据增加 失败 ！！', 'result' => 400]);
         }
     }
-    function pushContent(){
-        $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日韩剧','欧美剧','综艺'];
-        echo $category[1];
+    function pushContent($data){
+        try{
+            $client = new Client();
+            $request = new \GuzzleHttp\Psr7\Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/one');
+        }catch (\Exception $e) {
+            Log::info("error: 创建 http client 失败 ！！！！");
+        }
+        try{
+            $res = $client->send($request,['form_params'=>$data]);
+            Log::info("result : {$res->getBody()}");
+        }catch (\Exception $e) {
+            Log::info('error: 请求 服务器失败 http://movie.vbaodian.cn/ling/addContent/dy/one');
+        }
     }
 }
