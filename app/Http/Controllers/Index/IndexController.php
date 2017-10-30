@@ -106,4 +106,19 @@ class IndexController extends Controller
             Log::info('error: 请求 服务器失败 http://movie.vbaodian.cn/ling/addContent/dy/one');
         }
     }
+
+    function test(){
+        return view("test");
+    }
+
+    function dataList(){
+
+        $list = DB::table('dy_list')->paginate(20);
+
+        return view("admin.list")->with('list', $list);
+    }
+
+    function dataEdit(){
+        return view("admin.edit");
+    }
 }

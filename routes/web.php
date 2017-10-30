@@ -16,4 +16,7 @@ $router->get('/', function () use ($router) {
 });
 
 $router->post('/addOneDY', ['uses'=>'Index\IndexController@addOneDy']);
-//$router->get('/test', ['uses'=>'Index\IndexController@pushContent']);
+$router->get('/test', ['uses'=>'Index\IndexController@test']);
+
+$router->get('/list', ['uses'=>'Index\IndexController@dataList']);
+$router->get('/edit', ['uses'=>'Index\IndexController@dataEdit']);
