@@ -12,13 +12,13 @@ use GuzzleHttp\Client;
 
 class IndexController extends Controller
 {
+    protected $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日韩剧','欧美剧','综艺'];
     function addOneDy(Request $request){
-        $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日韩剧','欧美剧','综艺'];
         $params = $request->all();
         Log::info('ling',[1]);
         Log::info('ling',$params);
         $data = [];
-        $data['category'] = $category[$params['category_id']];
+        $data['category'] = $this->category[$params['category_id']];
         $data['title'] = $params['title'] ?? "";
         $data['name'] = $params['name'];
         $data['image_url'] = $params['image_url'] ?? "";
@@ -111,11 +111,55 @@ class IndexController extends Controller
         return view("test");
     }
 
-    function dataList(){
+    function dataList(Request $request){
 
-        $list = DB::table('dy_list')->paginate(20);
+        $params = $request->all();
+        Log::info('ling', $params);
 
-        return view("admin.list")->with('list', $list);
+        $list = DB::table('dy_list')
+            ->where(function ($query) use ($params){
+
+                if (!empty($params['id'])) {
+                    $query->where('id', '=', $params['id']);
+                }
+
+                if (!empty($params['title'])) {
+                    $query->where('title', 'like', '%'.$params['title'].'%');
+                }
+                if (!empty($params['category_id'])){
+                    $query->where('category_id', '=', $params['category_id']);
+                }
+
+                if (!empty($params['updateTimeStart']) && !empty($params['updateTimeEnd'])) {
+                    $query->whereBetween('update_time',[date('Y-m-d 00:00:00',strtotime($params['updateTimeStart'])), date('Y-m-d 23:59:59',strtotime($params['updateTimeEnd']))]);
+                }elseif (!empty($params['updateTimeStart'])) {
+                    $query->where('update_time', '>', date('Y-m-d 00:00:00',strtotime($params['updateTimeStart'])));
+                }elseif (!empty($params['updateTimeEnd'])){
+                    $query->where('update_time', '<', date('Y-m-d 23:59:59',strtotime($params['updateTimeEnd'])));
+                }
+
+            })
+            ->select('id','title','name','update_time','category_id')
+            ->orderBy('update_time','desc')
+            ->paginate(20);
+        return view("admin.list")
+            ->with('list', $list)
+            ->with('params', $params)
+            ->with('category', $this->category)
+            ;
+    }
+
+    function dataDetail($id){
+
+        $data = [];
+        if ($id) {
+            $data = DB::table('dy_list')->where('id', $id)->first();
+            $content = DB::table("dy_content_0{$data->content_table_tag}")->where('id', $data->content_id)->first();
+            $data->content = $content->content;
+        }
+        return view("admin.edit")
+            ->with('data', $data)
+            ->with('category', $this->category);
     }
 
     function dataEdit(){
