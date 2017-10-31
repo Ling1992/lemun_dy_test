@@ -20,4 +20,3 @@ $router->get('/test', ['uses'=>'Index\IndexController@test']);
 
 $router->get('/list', ['uses'=>'Index\IndexController@dataList']);
 $router->get('/detail/{id}', ['uses'=>'Index\IndexController@dataDetail']);
-$router->get('/edit', ['uses'=>'Index\IndexController@dataEdit']);

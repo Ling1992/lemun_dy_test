@@ -93,18 +93,18 @@ class IndexController extends Controller
         }
     }
     function pushContent($data){
-        try{
-            $client = new Client();
-            $request = new \GuzzleHttp\Psr7\Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/one');
-        }catch (\Exception $e) {
-            Log::info("error: 创建 http client 失败 ！！！！");
-        }
-        try{
-            $res = $client->send($request,['form_params'=>$data]);
-            Log::info("result : {$res->getBody()}");
-        }catch (\Exception $e) {
-            Log::info('error: 请求 服务器失败 http://movie.vbaodian.cn/ling/addContent/dy/one');
-        }
+//        try{
+//            $client = new Client();
+//            $request = new \GuzzleHttp\Psr7\Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/one');
+//        }catch (\Exception $e) {
+//            Log::info("error: 创建 http client 失败 ！！！！");
+//        }
+//        try{
+//            $res = $client->send($request,['form_params'=>$data]);
+//            Log::info("result : {$res->getBody()}");
+//        }catch (\Exception $e) {
+//            Log::info('error: 请求 服务器失败 http://movie.vbaodian.cn/ling/addContent/dy/one');
+//        }
     }
 
     function test(){
@@ -160,9 +160,5 @@ class IndexController extends Controller
         return view("admin.edit")
             ->with('data', $data)
             ->with('category', $this->category);
-    }
-
-    function dataEdit(){
-        return view("admin.edit");
     }
 }
