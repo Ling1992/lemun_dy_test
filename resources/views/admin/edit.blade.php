@@ -131,6 +131,7 @@
             options.type = "POST";
             options.success = function (info) {
                 console.log(info);
+                alert("result:" +info.result +"message:"+info.message);
             };
             $.ajax(options);
         }
