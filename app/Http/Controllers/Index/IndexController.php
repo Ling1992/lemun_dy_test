@@ -9,7 +9,6 @@ use \Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 
 
-
 class IndexController extends Controller
 {
     protected $category=['未知','最新','国语','微电影','经典高清','动画电影','3D电影','国剧','日韩剧','欧美剧','综艺'];
@@ -45,6 +44,8 @@ class IndexController extends Controller
                 $update_2 = DB::table("dy_content_0{$update->content_table_tag}")
                     ->where('id',$update->content_id)
                     ->update(['content'=>$params['content']]);
+                Log::info($update_1);
+                Log::info($update_2);
                 if ($update_1 && $update_2) {
                     DB::commit();
                     Log::info('ling', ['数据更新 成功 ！！']);

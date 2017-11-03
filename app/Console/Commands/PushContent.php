@@ -49,8 +49,9 @@ class PushContent extends Command
         $index_start = 1;
         try{
             $client = new Client();
-            $request = new Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/one');
-//            $request = new Request('POST', 'http://localhost:8087/ling/addContent/dy/one');
+            //$request = new Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/one');
+            //$request = new Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/two');
+            $request = new Request('POST', 'http://localhost:8087/ling/addContent/dy/one');
         }catch (\Exception $e) {
             $this->info("error: 创建 http client 失败 ！！！！");
             exit();
