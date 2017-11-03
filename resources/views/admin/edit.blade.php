@@ -118,6 +118,13 @@
             console.log('save');
 
             var data = {};
+
+            if($('input[name="id"]').val()) {
+                data.edit = $('input[name="id"]').val();
+            }else{
+                data.add = 1;
+            }
+
             data.title = $('input[name="title"]').val();
             data.name = $('input[name="name"]').val();
             data.image_url = $('input[name="image_url"]').val();

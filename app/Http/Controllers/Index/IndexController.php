@@ -24,6 +24,74 @@ class IndexController extends Controller
         $data['content'] = $params['content'];
         $data['update_time'] = strtotime($params['update_time']);
 
+
+        if ($request->has('edit')) {
+            $update = DB::table('dy_list')
+                ->where('id','=',$params['edit'])
+                ->first();
+
+            DB::beginTransaction();
+            $update_1 = DB::table('dy_list')
+                ->where('id',$update->id)
+                ->update([
+                    'title' => $params['title'],
+                    'name' => $params['name'],
+                    'category_id' => $params['category_id'],
+                    'image_url' => $data['image_url'],
+                    'update_time'=>$params['update_time'],
+                ]);
+            $update_2 = DB::table("dy_content_0{$update->content_table_tag}")
+                ->where('id',$update->content_id)
+                ->update(['content'=>$params['content']]);
+            Log::info($update_1);
+            Log::info($update_2);
+            if ($update_1 && $update_2) {
+                DB::commit();
+                Log::info('ling', ['数据更新 成功 ！！']);
+                $data['dy_id'] = $update->id;
+                $this->pushContent($data);
+                return response()->json(['message' => ' 数据更新 成功 ！！', 'result' => 203]);
+            }else{
+                Log::info('ling', ['数据更新 失败 ！！']);
+                DB::rollBack();
+                return response()->json(['message' => ' 数据更新 失败 ！！', 'result' => 403]);
+            }
+
+        }elseif ($request->has('add')){
+
+            $content_table_tag = mt_rand(1, 4);
+            DB::beginTransaction();
+            $content_id = DB::table("dy_content_0{$content_table_tag}")->insertGetId(
+                ['content' => $params['content']]
+            );
+            Log::info('ling',[2]);
+            $list_id = DB::table("dy_list")->insertGetId(
+                [
+                    'title' => $params['title'],
+                    'name' => $params['name'] ?? "",
+                    'image_url' => $params['image_url'] ?? "",
+
+                    'category_id' => $params['category_id'],
+                    'content_id' => $content_id,
+                    'content_table_tag' => $content_table_tag,
+                    'update_time'=>$params['update_time'],
+                ]
+            );
+            Log::info('ling',[3]);
+            if ($content_id && $list_id) {
+                DB::commit();
+                Log::info('ling', ['数据新增 成功 ！！']);
+                $data['dy_id'] = $list_id;
+                $this->pushContent($data);
+                return response()->json(['message' => ' 数据新增 成功 ！！', 'result' => 202]);
+            }else{
+                DB::rollBack();
+                Log::info('ling', ['数据增加 失败 ！！']);
+                Log::info('ling', $params);
+                return response()->json(['message' => ' 数据增加 失败 ！！', 'result' => 402]);
+            }
+        }
+
         $update = DB::table('dy_list')
             ->where('name','=',$params['name'])
             ->where('category_id', '=', $params['category_id'])
@@ -96,7 +164,8 @@ class IndexController extends Controller
     function pushContent($data){
         try{
             $client = new Client();
-            $request = new \GuzzleHttp\Psr7\Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/one');
+//            $request = new \GuzzleHttp\Psr7\Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/one');
+            $request = new \GuzzleHttp\Psr7\Request('POST', 'http://movie.vbaodian.cn/ling/addContent/dy/two');
         }catch (\Exception $e) {
             Log::info("error: 创建 http client 失败 ！！！！");
         }
@@ -104,7 +173,8 @@ class IndexController extends Controller
             $res = $client->send($request,['form_params'=>$data]);
             Log::info("result : {$res->getBody()}");
         }catch (\Exception $e) {
-            Log::info('error: 请求 服务器失败 http://movie.vbaodian.cn/ling/addContent/dy/one');
+//            Log::info('error: 请求 服务器失败 http://movie.vbaodian.cn/ling/addContent/dy/one');
+            Log::info('error: 请求 服务器失败 http://movie.vbaodian.cn/ling/addContent/dy/two');
         }
     }
 
